@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- Setting up log path and log file name -->
+	<property name="LOG_PATH" value="./logs" />
+	<property name="LOG_FILE_NAME" value="application_logback" />
+
+	<!-- Setting up logging pattern for console logging -->
+	<appender name="ConsoleOutput"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%white(%d{ISO8601}) %highlight(%-5level) [%yellow(%t)] : %msg%n%throwable
+			</Pattern>
+		</layout>
+	</appender>
+
+	<!-- Setting the filename and logging pattern for log file -->
+	<appender name="LogFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level : %msg%n
+			</Pattern>
+		</encoder>
+		
+		<!-- Setting up a rolling policy with rolling done
+			daily and when file size is 10MB-->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/archived/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<!-- Logging at INFO level -->
+	<root level="info">
+		<appender-ref ref="LogFile" />
+		<appender-ref ref="ConsoleOutput" />
+	</root>
+	
+	<!-- Logging at TRACE level -->
+	<logger name="com.log" level="trace" additivity="false">
+		<appender-ref ref="LogFile" />
+		<appender-ref ref="ConsoleOutput" />
+	</logger>
+	
+</configuration>
+
+=============Second way===================
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>Logs.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="org.springframework.web" level="DEBUG" />
+    <logger name="your.custom.package" level="TRACE" />
+
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
+
+===============another way with size fixd==================
+<configuration>
+<appender name = "STDOUT" class = "ch.qos.logback.core.ConsoleAppender">
+ <encoder>
+         <pattern>[%d{yyyy-MM-dd HH:mm:ss}] - %msg%n</pattern>
+      </encoder>
+</appender>
+<appender name="SIZE_TIME_OUTPUT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>c:/Tools/logs/sizeTimeOutputlogFile.log</file>
+    <encoder>
+         <pattern>[%d{yyyy-MM-dd HH:mm:ss}] - %msg%n</pattern>
+      </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>c:/Tools/logs/archived/sizeTimeOutputlogFile.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+<!--Max Size of file to start Archive -->
+            <maxFileSize>10KB</maxFileSize>
+        </timeBasedFileNamingAndTriggeringPolicy>
+
+<!-- Days till log history to keep -->
+         <maxHistory>3</maxHistory>
+    </rollingPolicy>
+   
+</appender>
+   
+   <root level = "DEBUG">
+      <appender-ref ref = "SIZE_TIME_OUTPUT_FILE"/>
+      <appender-ref ref = "STDOUT"/>
+   </root>
+</configuration>
+
+
